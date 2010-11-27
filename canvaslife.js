@@ -8,14 +8,17 @@ var graphics = function()
 {
     var canvas;
     var ctx;
+    var canvasId;
 
     return {
         canvas: canvas,
         ctx: ctx,
-        initCanvas: function() 
+        canvasId: canvasId,
+        initCanvas: function(canvasId) 
         {
-            this.canvas = $('#universe').get(0);
-            this.ctx = this.canvas.getContext('2d');
+            this.canvas = $('#' + canvasId).get(0);
+            this.ctx = this.canvas.getContext('2d'); 
+            this.canvasId = canvasId;
         },
         drawCell: function(x, y, alive)
         {
@@ -33,7 +36,7 @@ var graphics = function()
             var cell = getCellPointUnderMouse(e);
             var state;
             processCell(cell);
-            $('#universe').mousemove(function(e)
+            $('#' + g.canvasId).mousemove(function(e)
             {
                 cell = getCellPointUnderMouse(e);
                 processCell(cell);
@@ -57,23 +60,14 @@ var graphics = function()
                 l.prev[x][y] = state;
                 g.drawCell(x, y, state);
             }
-            $('body').mouseup(function(e)
-            {
-                $('#universe').unbind('mousemove');
-            });
+            
         }
     }
-}();
-
-var life = function() 
-{
-    var yCells;
-    var xCells;
+}(); var life = function() { var yCells; var xCells;
 
     var alive = false;
     var prev = []; // previous generation
     var next = []; // next generation
-    var change = []; // change list
 
     var _wrapping = true; 
     var _gridColor = 'rgb(50, 50, 50)';
@@ -127,10 +121,10 @@ var life = function()
         onColor: onColor,
         offColor: offColor,
         cellSize: cellSize,
-        initUniverse: function()
+        initUniverse: function(canvasId)
         {
             var g = graphics;
-            g.initCanvas();
+            g.initCanvas(canvasId);
             this.xCells = ((g.canvas.width - 1) / this.cellSize) | 0;
             this.yCells = ((g.canvas.height - 1)/ this.cellSize) | 0; 
             g.ctx.fillStyle = this.offColor;
@@ -156,7 +150,11 @@ var life = function()
             {
                 g.ctx.fillRect(i * this.cellSize, 0, 1, this.yCells * this.cellSize);
             }
-            $('#universe').mousedown(g.handleMouse);
+            $('#' + canvasId).mousedown(g.handleMouse);
+            $('body').mouseup(function(e)
+            {
+                $('#' + g.canvasId).unbind('mousemove');
+            });
         },
     };
 }();
