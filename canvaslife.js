@@ -6,76 +6,86 @@ var Point = function(x, y)
 
 var graphics = function()
 {
+    // public
     var canvas;
     var ctx;
     var canvasId;
+
+    var initCanvas = function(canvasId) {
+        this.canvas = $('#' + canvasId).get(0);
+        this.ctx = this.canvas.getContext('2d'); 
+        this.canvasId = canvasId;
+    }
+
+    var drawCell = function(x, y, alive) {
+        var l = life;
+        x--;
+        y--;
+        this.ctx.fillStyle = (alive)? l.onColor : l.offColor;
+        this.ctx.fillRect(y * l.cellSize + 1, x * l.cellSize + 1, l.cellSize - 1, l.cellSize - 1);
+    }
+
+    var handleMouse = function(e) {
+        var l = life;
+        var g = graphics;
+        var that = this;
+        var cell = getCellPointUnderMouse(e);
+        var state;
+        processCell(cell);
+        $('#' + g.canvasId).mousemove(function(e)
+        {
+            cell = getCellPointUnderMouse(e);
+            processCell(cell);
+        });
+        function getCellPointUnderMouse(e)
+        {
+            return new Point((((e.pageY - that.offsetTop) - 2) / l.cellSize) + 1 | 0, ((e.pageX - that.offsetLeft) / l.cellSize) + 1 | 0); // Manually adjusted
+        }
+        function processCell(cell)
+        {
+            var x = cell.x;
+            var y = cell.y;
+            if(!(x > 0 && x <= l.yCells && y > 0 && y <= l.xCells))
+            {
+                return;
+            }
+            if(typeof state == 'undefined')
+            {
+                state = !l.prev[x][y];
+            } 
+            l.prev[x][y] = state;
+            g.drawCell(x, y, state);
+        }
+        
+    }
 
     return {
         canvas: canvas,
         ctx: ctx,
         canvasId: canvasId,
-        initCanvas: function(canvasId) 
-        {
-            this.canvas = $('#' + canvasId).get(0);
-            this.ctx = this.canvas.getContext('2d'); 
-            this.canvasId = canvasId;
-        },
-        drawCell: function(x, y, alive)
-        {
-            var l = life;
-            x--;
-            y--;
-            this.ctx.fillStyle = (alive)? l.onColor : l.offColor;
-            this.ctx.fillRect(y * l.cellSize + 1, x * l.cellSize + 1, l.cellSize - 1, l.cellSize - 1);
-        },
-        handleMouse: function(e)
-        {
-            var g = graphics;
-            var l = life;
-            var that = this;
-            var cell = getCellPointUnderMouse(e);
-            var state;
-            processCell(cell);
-            $('#' + g.canvasId).mousemove(function(e)
-            {
-                cell = getCellPointUnderMouse(e);
-                processCell(cell);
-            });
-            function getCellPointUnderMouse(e)
-            {
-                return new Point((((e.pageY - that.offsetTop) - 2) / l.cellSize) + 1 | 0, ((e.pageX - that.offsetLeft) / l.cellSize) + 1 | 0); // Manually adjusted
-            }
-            function processCell(cell)
-            {
-                var x = cell.x;
-                var y = cell.y;
-                if(!(x > 0 && x <= l.yCells && y > 0 && y <= l.xCells))
-                {
-                    return;
-                }
-                if(typeof state == 'undefined')
-                {
-                    state = !l.prev[x][y];
-                } 
-                l.prev[x][y] = state;
-                g.drawCell(x, y, state);
-            }
-            
-        }
+        initCanvas: initCanvas,
+        drawCell: drawCell,
+        handleMouse: handleMouse
     }
-}(); var life = function() { var yCells; var xCells;
+}(); 
 
-    var alive = false;
+var life = function() { 
+
+    // public
+    var yCells; 
+    var xCells;
     var prev = []; // previous generation
     var next = []; // next generation
-
-    var _wrapping = true; 
-    var _gridColor = 'rgb(50, 50, 50)';
     var onColor = 'rgb(0, 200, 0)';
     var offColor = 'rgb(200, 0, 0)';
     var cellSize = 10; // pixels
 
-    var _copyCells = function()
+    // private
+    var alive = false;
+    var wrapping = true; 
+    var gridColor = 'rgb(50, 50, 50)';
+
+    var copyCells = function()
     {
         var l = life;
         for(var i = 1; i <= l.yCells; i++)
@@ -87,7 +97,7 @@ var graphics = function()
         }
 
         // Copy edges for wrapping
-        if(_wrapping)
+        if(wrapping)
         {
             l.prev[0][0] = l.next[yCells][xCells];
             l.prev[0][xCells + 1] = l.next[yCells][1];
@@ -106,11 +116,46 @@ var graphics = function()
         }
     }
 
-    var _neighbourCount = function(x, y)
+    var neighbourCount = function(x, y)
     {
         var l = life;
         var count = 0;
         return count;
+    }
+
+    var initUniverse = function(canvasId) {
+        var g = graphics;
+        g.initCanvas(canvasId);
+        this.xCells = ((g.canvas.width - 1) / this.cellSize) | 0;
+        this.yCells = ((g.canvas.height - 1)/ this.cellSize) | 0; 
+        g.ctx.fillStyle = this.offColor;
+        g.ctx.fillRect(0, 0, this.xCells * this.cellSize, this.yCells * this.cellSize);
+        g.ctx.fillStyle = gridColor;
+
+        // Adds padding for faster wrapping
+        for(var i = 0; i < this.yCells + 2; i++)
+        {
+            this.prev[i] = [];
+            this.next[i] = [];
+            if(i <= this.yCells)
+            {
+                g.ctx.fillRect(0, i * this.cellSize, this.xCells * this.cellSize, 1);
+            }
+            for(var j = 0; j < this.xCells + 2; j++)
+            {
+                this.prev[i][j] = false;
+                this.next[i][j] = false;
+            }
+        }
+        for(var i = 0; i <= this.xCells; i++)
+        {
+            g.ctx.fillRect(i * this.cellSize, 0, 1, this.yCells * this.cellSize);
+        }
+        $('#' + canvasId).mousedown(g.handleMouse);
+        $('body').mouseup(function(e)
+        {
+            $('#' + g.canvasId).unbind('mousemove');
+        });
     }
 
     return {
@@ -121,42 +166,8 @@ var graphics = function()
         onColor: onColor,
         offColor: offColor,
         cellSize: cellSize,
-        initUniverse: function(canvasId)
-        {
-            var g = graphics;
-            g.initCanvas(canvasId);
-            this.xCells = ((g.canvas.width - 1) / this.cellSize) | 0;
-            this.yCells = ((g.canvas.height - 1)/ this.cellSize) | 0; 
-            g.ctx.fillStyle = this.offColor;
-            g.ctx.fillRect(0, 0, this.xCells * this.cellSize, this.yCells * this.cellSize);
-            g.ctx.fillStyle = _gridColor;
-
-            // Adds padding for faster wrapping
-            for(var i = 0; i < this.yCells + 2; i++)
-            {
-                this.prev[i] = [];
-                this.next[i] = [];
-                if(i <= this.yCells)
-                {
-                    g.ctx.fillRect(0, i * this.cellSize, this.xCells * this.cellSize, 1);
-                }
-                for(var j = 0; j < this.xCells + 2; j++)
-                {
-                    this.prev[i][j] = false;
-                    this.next[i][j] = false;
-                }
-            }
-            for(var i = 0; i <= this.xCells; i++)
-            {
-                g.ctx.fillRect(i * this.cellSize, 0, 1, this.yCells * this.cellSize);
-            }
-            $('#' + canvasId).mousedown(g.handleMouse);
-            $('body').mouseup(function(e)
-            {
-                $('#' + g.canvasId).unbind('mousemove');
-            });
-        },
-    };
+        initUniverse: initUniverse
+    }
 }();
 
 
