@@ -42,6 +42,9 @@ var graphics = function() {
         function processCell(cell) {
             var x = cell.x;
             var y = cell.y;
+            if (x > l.xCells - 1 || y > l.yCells - 1) {
+                return;
+            }
             if (typeof state == 'undefined')
             {
                 state = !l.prev[x][y];
