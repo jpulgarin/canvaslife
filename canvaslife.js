@@ -207,5 +207,6 @@ var life = function() {
         initUniverse: initUniverse,
         nextGen: nextGen,
         toggleLife: toggleLife,
+        clear: clear,
     }
 }();
