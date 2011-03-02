@@ -84,8 +84,8 @@ var life = function() {
     var xCells;
     var prev = []; // previous generation
     var next = []; // next generation
-    var timeout;
 
+    var _timeout;
     var _alive = false;
 
     var initUniverse = function(canvasId) {
@@ -159,10 +159,20 @@ var life = function() {
 
         if (!l._alive) {
             l._alive = true;
-            l.timeout = setInterval("life.nextGen()", 100);
+            l._timeout = setInterval("life.nextGen()", 100);
         } else {
             l._alive = false;
-            clearInterval(l.timeout);
+            clearInterval(l._timeout);
+        }
+    }
+
+    var clear = function() {
+        var l = life;
+
+        for (var x = 0; x < l.xCells; x++) {
+            for (var y = 0; y < l.yCells; y++) {
+                l.prev[x][y] = false;
+            }
         }
     }
 
