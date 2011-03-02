@@ -168,12 +168,14 @@ var life = function() {
 
     var clear = function() {
         var l = life;
+        var g = graphics;
 
         for (var x = 0; x < l.xCells; x++) {
             for (var y = 0; y < l.yCells; y++) {
                 l.prev[x][y] = false;
             }
         }
+        g.paint();
     }
 
     var _neighbourCount = function(x, y) {
