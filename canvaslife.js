@@ -199,29 +199,3 @@ var life = function() {
         toggleLife: toggleLife,
     }
 }();
-
-function debugPrev() {
-    var debug = $('#prev');
-    var html = "";
-    for (var y = 0; y < life.yCells; y++) {
-        for (var x = 0; x < life.xCells; x++) {
-            html += ((life.prev[x][y])? 1 : 0) + " - ";
-        }
-        html += "<br />";
-    }
-    debug.html(html); 
-}
-
-function debugNext() {
-    var debug = $('#next');
-    var html = "";
-    for(var y = 0; y < life.yCells; y++)
-    {
-        for(var x = 0; x < life.xCells; x++)
-        {
-            html += ((life.next[x][y])? 1 : 0) + " - ";
-        }
-        html += "<br />";
-    }
-    debug.html(html); 
-}
