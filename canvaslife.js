@@ -30,9 +30,10 @@ var graphics = function() {
     var gridColour = 'rgb(50, 50, 50)';
 
     var initCanvas = function(canvasId) {
-        this.canvas = $(canvasId).get(0);
-        this.ctx = this.canvas.getContext('2d'); 
-        this.canvasId = canvasId;
+        var g = graphics;
+        g.canvas = $(canvasId).get(0);
+        g.ctx = g.canvas.getContext('2d'); 
+        g.canvasId = canvasId;
     }
 
     var drawCell = function(x, y, alive) {
