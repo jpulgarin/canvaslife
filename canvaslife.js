@@ -189,7 +189,7 @@ var life = function() {
     var loadPattern = function(url) {
         var g = graphics;
         var l = life;
-        var padding = 50;
+        var padding = 30;
         $.ajax({
             url: url,
             success: function(data) {
