@@ -191,7 +191,7 @@ var life = function() {
         var l = life;
         var padding = 50;
         $.ajax({
-            url: "http://0.0.0.0:8000/a.rle",
+            url: url,
             success: function(data) {
                 var match = data.match(/x\s=\s(\d*).*?y\s=\s(\d*).*\r([^]*)!/);
                 var x = parseInt(match[1]);
