@@ -98,11 +98,11 @@ var graphics = function() {
 }(); 
 
 var life = function() { 
-
     var yCells; 
     var xCells;
     var prev = []; // previous generation
     var next = []; // next generation
+    var speed = 100;
 
     var _timeout;
     var _alive = false;
@@ -110,6 +110,7 @@ var life = function() {
     var initUniverse = function(canvasId) {
         var l = life;
         var g = graphics;
+
         g.initCanvas(canvasId);
         l.xCells = ((g.canvas.width - 1) / g.cellSize) | 0;
         l.yCells = ((g.canvas.height - 1) / g.cellSize) | 0; 
@@ -174,14 +175,32 @@ var life = function() {
     }
 
     var toggleLife = function() {
-        var l = life;
-
-        if (!l._alive) {
-            l._alive = true;
-            l._timeout = setInterval("life.nextGen()", 100);
+        if (!_alive) {
+            _alive = true;
+            _timeout = setInterval("life.nextGen()", this.speed);
         } else {
-            l._alive = false;
-            clearInterval(l._timeout);
+            _alive = false;
+            clearInterval(_timeout);
+        }
+    }
+
+    var changeSpeed = function(faster) {
+        if (faster) {
+            if (this.speed == 0) {
+                return;
+            }
+            this.speed -= 10;
+
+        } else {
+            if (this.speed == 1000) {
+                return;
+            }
+            this.speed += 10;
+        }
+
+        if (_alive) {
+            clearInterval(_timeout);
+            _timeout = setInterval("life.nextGen()", this.speed);
         }
     }
 
@@ -225,9 +244,11 @@ var life = function() {
         xCells: xCells,
         prev: prev,
         next: next,
+        speed: speed,
         initUniverse: initUniverse,
         nextGen: nextGen,
         toggleLife: toggleLife,
         clear: clear,
+        changeSpeed: changeSpeed,
     }
 }();
