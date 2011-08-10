@@ -68,7 +68,6 @@ var graphics = function() {
             } 
             l.prev[x][y] = state;
             drawCell(x, y, state);
-            // TODO: Consider setting next as well
         }
     }
 
@@ -184,6 +183,46 @@ var life = function() {
             clearInterval(_timeout);
         }
     }
+    
+    // Parses files in Run Length Encoded Format
+    // http://psoup.math.wisc.edu/mcell/ca_files_formats.html#RLE
+    var loadPattern = function(url) {
+        var g = graphics;
+        var l = life;
+        $.ajax({
+            url: "http://0.0.0.0:8000/3enginecordershipgun.rleh",
+            success: function(data) {
+                var match = data.match(/x\s=\s(\d*).*?y\s=\s(\d*).*\r([^]*)!/);
+                var x = match[1];
+                var y = match[2];
+                var pattern = match[3].replace(/\s+/g, ""); // remove whitespace
+
+                $(g.canvasId).attr('height', g.cellSize * x);
+                $(g.canvasId).attr('width', g.cellSize * y);
+                $(g.canvasId).unbind('mousedown');
+                l.initUniverse(g.canvasId);
+
+                var lines = pattern.split('$');
+                alert(lines.length);
+
+                for (var y = 0; y < lines.length; y++) {
+                    var line = "booobbboobobobobob";
+                    var x = 0;
+                    while(line) {
+                        if (line.charAt(0) == 'o' || line.charAt(0) == 'b') {
+                            if (line.charAt(0) == 'o') {
+                                //alert("yo");
+                                l.prev[x][y] = true;
+                                g.drawCell(x, y, true);
+                            }
+                            x++;
+                            line = line.substring(1);
+                        }
+                    } 
+                }
+            },
+        });
+    }
 
     var changeSpeed = function(faster) {
         if (faster) {
@@ -251,5 +290,6 @@ var life = function() {
         toggleLife: toggleLife,
         clear: clear,
         changeSpeed: changeSpeed,
+        loadPattern: loadPattern,
     }
 }();
