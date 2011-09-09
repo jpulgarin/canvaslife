@@ -1,4 +1,5 @@
-/* * Copyright 2011 Julian Pulgarin 
+/* 
+ * Copyright 2011 Julian Pulgarin 
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,9 +77,9 @@ var graphics = function() {
 
         for (var x = 0; x < l.xCells; x++) {
             for (var y = 0; y < l.yCells; y++) {
-				if (l.prev[x][y] !== l.next[x][y]) {
-					g.drawCell(x, y, l.next[x][y]);
-				}
+                if (l.prev[x][y] !== l.next[x][y]) {
+                    g.drawCell(x, y, l.next[x][y]);
+                }
             }
         }
     }
@@ -278,9 +279,9 @@ var life = function() {
 
         for (var x = 0; x < l.xCells; x++) {
             for (var y = 0; y < l.yCells; y++) {
-				l.prev[x][y] = false;
+                l.prev[x][y] = false;
             }
-		}
+        }
    }
 
     var _neighbourCount = function(x, y) {
