@@ -1,5 +1,5 @@
-/* 
- * Copyright 2011 Julian Pulgarin 
+/*
+ * Copyright 2011-2012 Julian Pulgarin
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,69 +14,76 @@
  * limitations under the License.
  */
 
-var Point = function(x, y) {
+/*jslint plusplus: true */
+/*globals $, life, setInterval, clearInterval */
+
+var Point = function (x, y) {
+    "use strict";
+
     this.x = x;
     this.y = y;
 };
 
-var graphics = function() {
-    var canvas;
-    var ctx;
-    var canvasId;
+var graphics = (function () {
+    "use strict";
 
-    var cellSize = 10; // pixels
-    var onColour = 'rgb(0, 200, 0)';
-    var offColour = 'rgb(200, 0, 0)';
-    var gridColour = 'rgb(50, 50, 50)';
+    var canvas,
+        ctx,
+        canvasId,
+        cellSize = 10, // pixels
+        onColour = 'rgb(0, 200, 0)',
+        offColour = 'rgb(200, 0, 0)',
+        gridColour = 'rgb(50, 50, 50)',
+        initCanvas = function (canvasId) {
+            var g = graphics;
+            g.canvas = $(canvasId).get(0);
+            g.ctx = g.canvas.getContext('2d');
+            g.canvasId = canvasId;
+        },
+        drawCell = function (x, y, alive) {
+            var g = graphics;
+            g.ctx.fillStyle = (alive) ? onColour : offColour;
+            g.ctx.fillRect(x * cellSize + 1, y * cellSize + 1, cellSize - 1, cellSize - 1);
+        },
+        handleMouse = function (e) {
+            var g = graphics,
+                l = life,
+                that = this,
+                state;
 
-    var initCanvas = function(canvasId) {
-        var g = graphics;
-        g.canvas = $(canvasId).get(0);
-        g.ctx = g.canvas.getContext('2d'); 
-        g.canvasId = canvasId;
-    }
-
-    var drawCell = function(x, y, alive) {
-        var g = graphics;
-        g.ctx.fillStyle = (alive)? onColour : offColour;
-        g.ctx.fillRect(x * cellSize + 1, y * cellSize + 1, cellSize - 1, cellSize - 1);
-    }
-
-    var handleMouse = function(e) {
-        var l = life;
-        var g = graphics;
-        var that = this;
-        var cell = getCellPointUnderMouse(e);
-        var state;
-        processCell(cell);
-        $(g.canvasId).mousemove(function(e) {
-            cell = getCellPointUnderMouse(e);
-            processCell(cell);
-        });
-        function getCellPointUnderMouse(e) {
-            return new Point((e.pageX - that.offsetLeft) / g.cellSize | 0, ((e.pageY - that.offsetTop) / g.cellSize) | 0);
-        }
-        function processCell(cell) {
-            var x = cell.x;
-            var y = cell.y;
-            if (x > l.xCells - 1 || y > l.yCells - 1) {
-                return;
+            function getCellPointUnderMouse(e) {
+                return new Point(Math.floor((e.pageX - that.offsetLeft) / g.cellSize), Math.floor(((e.pageY - that.offsetTop) / g.cellSize)));
             }
-            if (typeof state == 'undefined')
-            {
-                state = !l.prev[x][y];
-            } 
-            l.prev[x][y] = state;
-            drawCell(x, y, state);
-        }
-    }
+
+            function processCell(cell) {
+                var x = cell.x,
+                    y = cell.y;
+                if (x > l.xCells - 1 || y > l.yCells - 1) {
+                    return;
+                }
+                if (typeof state === 'undefined') {
+                    state = !l.prev[x][y];
+                }
+                l.prev[x][y] = state;
+                drawCell(x, y, state);
+            }
+
+            processCell(getCellPointUnderMouse(e));
+
+
+            $(g.canvasId).mousemove(function (e) {
+                processCell(getCellPointUnderMouse(e));
+            });
+        };
 
     function paint() {
-        var g = graphics;
-        var l = life;
+        var g = graphics,
+            l = life,
+            x,
+            y;
 
-        for (var x = 0; x < l.xCells; x++) {
-            for (var y = 0; y < l.yCells; y++) {
+        for (x = 0; x < l.xCells; x++) {
+            for (y = 0; y < l.yCells; y++) {
                 if (l.prev[x][y] !== l.next[x][y]) {
                     g.drawCell(x, y, l.next[x][y]);
                 }
@@ -95,217 +102,222 @@ var graphics = function() {
         initCanvas: initCanvas,
         drawCell: drawCell,
         handleMouse: handleMouse,
-        paint: paint,
-    }
-}(); 
+        paint: paint
+    };
+}());
 
-var life = function() { 
-    var yCells; 
-    var xCells;
-    var prev = []; // previous generation
-    var next = []; // next generation
-    var speed = 100;
+var life = (function () {
+    "use strict";
 
-    var _timeout;
-    var _alive = false;
+    var yCells,
+        xCells,
+        prev = [], // previous generation
+        next = [], // next generation
+        speed = 100,
+        timeout,
+        alive = false,
+        x,
+        y,
+        initUniverse = function (canvasId) {
+            var l = life,
+                g = graphics;
 
-    var initUniverse = function(canvasId) {
-        var l = life;
-        var g = graphics;
+            g.initCanvas(canvasId);
+            l.xCells = Math.floor((g.canvas.width - 1) / g.cellSize);
+            l.yCells = Math.floor((g.canvas.height - 1) / g.cellSize);
+            g.ctx.fillStyle = g.offColour;
+            g.ctx.fillRect(0, 0, l.xCells * g.cellSize, l.yCells * g.cellSize);
+            g.ctx.fillStyle = g.gridColour;
 
-        g.initCanvas(canvasId);
-        l.xCells = ((g.canvas.width - 1) / g.cellSize) | 0;
-        l.yCells = ((g.canvas.height - 1) / g.cellSize) | 0; 
-        g.ctx.fillStyle = g.offColour;
-        g.ctx.fillRect(0, 0, l.xCells * g.cellSize, l.yCells * g.cellSize);
-        g.ctx.fillStyle = g.gridColour;
-
-        for (var x = 0; x < l.xCells; x++) {
-            l.prev[x] = [];
-            l.next[x] = [];
-            g.ctx.fillRect(x * g.cellSize, 0, 1, l.yCells * g.cellSize);
-            for(var y = 0; y < l.yCells; y++)
-            {
-                l.prev[x][y] = false;
-            }
-        }
-        g.ctx.fillRect(l.xCells * g.cellSize, 0, 1, l.yCells * g.cellSize);
-        for(var y = 0; y < l.yCells; y++)
-        {
-            g.ctx.fillRect(0, y * g.cellSize, l.xCells * g.cellSize, 1);
-        }
-        g.ctx.fillRect(0, l.yCells * g.cellSize, l.xCells * g.cellSize, 1);
-        $(canvasId).mousedown(g.handleMouse);
-        $('body').mouseup(function(e)
-        {
-            $(g.canvasId).unbind('mousemove');
-        });
-    }
-
-    var nextGen = function() {
-        var l = life;
-        var g = graphics;
-
-        for (var x = 0; x < l.xCells; x++) {
-            for (var y = 0; y < l.yCells; y++) {
-                l.next[x][y] = l.prev[x][y];
-            }
-        }
-
-        for (var x = 0; x < l.xCells; x++) {
-            for (var y = 0; y < l.yCells; y++) {
-                count = _neighbourCount(x, y);
-
-                // Game of Life rules
-                if (prev[x][y]) {
-                    if (count < 2 || count > 3) {
-                        next[x][y] = false;
-                    }
-                } else if (count == 3) {
-                    next[x][y] = true;
-                } 
-            }
-        }
-
-        g.paint();
-
-		for (var x = 0; x < l.xCells; x++) {
-            for (var y = 0; y < l.yCells; y++) {
-                l.prev[x][y] = l.next[x][y];
-            }
-        }
-    }
-
-    var toggleLife = function() {
-        if (!_alive) {
-            _alive = true;
-            _timeout = setInterval("life.nextGen()", this.speed);
-        } else {
-            _alive = false;
-            clearInterval(_timeout);
-        }
-    }
-    
-    // Parses files in Run Length Encoded Format
-    // http://www.conwaylife.com/wiki/RLE
-    var loadPattern = function(url) {
-        var g = graphics;
-        var l = life;
-        var padding = 30;
-        $.ajax({
-            url: url,
-            success: function(data) {
-                var match = data.match(/x\s=\s(\d*).*?y\s=\s(\d*).*\r([^]*)!/);
-                var x = parseInt(match[1]);
-                var y = parseInt(match[2]);
-                var pattern = match[3].replace(/\s+/g, ""); // remove whitespace
-
-                $(g.canvasId).attr('height', g.cellSize * (y + 1 + (padding * 2)));
-                $(g.canvasId).attr('width', g.cellSize * (x + 1 + (padding * 2)));
-                $(g.canvasId).unbind('mousedown');
-                l.initUniverse(g.canvasId);
-
-                var lines = pattern.split('$');
-                var offset = 0;
-                var y = padding - 1;
-
-                for (var i = 0; i < lines.length; i++) {
-                    y++;
-                    var x = padding;
-                    var line = lines[i];
-                    while(line) {
-                        if (line.charAt(0) == 'o' || line.charAt(0) == 'b') {
-                            if (line.charAt(0) == 'o') {
-                                l.prev[x][y] = true;
-                                g.drawCell(x, y, true);
-                            }
-                            x++;
-                            line = line.substring(1);
-                        } else {
-                            var length = line.match(/(\d*)/)[1];
-                            line = line.substring(length.length);
-                            length = parseInt(length);
-                            if (!line) {
-                                y += length - 1;
-                                break;
-                            }
-                            if (line.charAt(0) == 'o') {
-                                for (var j = 0; j < length; j++)
-                                {
-                                    l.prev[x + j][y] = true;
-                                    g.drawCell(x + j, y, true);
-                                }
-                            }
-                            x += length;
-                            line = line.substring(1);
-                        }
-                    } 
+            for (x = 0; x < l.xCells; x++) {
+                l.prev[x] = [];
+                l.next[x] = [];
+                g.ctx.fillRect(x * g.cellSize, 0, 1, l.yCells * g.cellSize);
+                for (y = 0; y < l.yCells; y++) {
+                    l.prev[x][y] = false;
                 }
-            },
-        });
-    }
-
-    var changeSpeed = function(faster) {
-        if (faster) {
-            if (this.speed == 0) {
-                return;
             }
-            this.speed -= 10;
-
-        } else {
-            if (this.speed == 1000) {
-                return;
+            g.ctx.fillRect(l.xCells * g.cellSize, 0, 1, l.yCells * g.cellSize);
+            for (y = 0; y < l.yCells; y++) {
+                g.ctx.fillRect(0, y * g.cellSize, l.xCells * g.cellSize, 1);
             }
-            this.speed += 10;
-        }
+            g.ctx.fillRect(0, l.yCells * g.cellSize, l.xCells * g.cellSize, 1);
+            $(canvasId).mousedown(g.handleMouse);
+            $('body').mouseup(function (e) {
+                $(g.canvasId).unbind('mousemove');
+            });
+        },
+        neighbourCount = function (x, y) {
+            var l = life,
+                count = 0,
+                i,
+                neighbours = [
+                    l.prev[x][(y - 1 + l.yCells) % l.yCells],
+                    l.prev[(x + 1 + l.xCells) % l.xCells][(y - 1 + l.yCells) % l.yCells],
+                    l.prev[(x + 1 + l.xCells) % l.xCells][y],
+                    l.prev[(x + 1 + l.xCells) % l.xCells][(y + 1 + l.yCells) % l.yCells],
+                    l.prev[x][(y + 1 + l.yCells) % l.yCells],
+                    l.prev[(x - 1 + l.xCells) % l.xCells][(y + 1 + l.yCells) % l.yCells],
+                    l.prev[(x - 1 + l.xCells) % l.xCells][y],
+                    l.prev[(x - 1 + l.xCells) % l.xCells][(y - 1 + l.yCells) % l.yCells]
+                ];
 
-        if (_alive) {
-            clearInterval(_timeout);
-            _timeout = setInterval("life.nextGen()", this.speed);
-        }
-    }
-
-    var clear = function() {
-        var l = life;
-        var g = graphics;
-
-        for (var x = 0; x < l.xCells; x++) {
-            for (var y = 0; y < l.yCells; y++) {
-                l.next[x][y] = false;
+            for (i = 0; i < neighbours.length; i++) {
+                if (neighbours[i]) {
+                    count++;
+                }
             }
-        }
 
-        g.paint();
+            return count;
+        },
+        nextGen = function () {
+            var l = life,
+                g = graphics,
+                count;
 
-        for (var x = 0; x < l.xCells; x++) {
-            for (var y = 0; y < l.yCells; y++) {
-                l.prev[x][y] = false;
+            for (x = 0; x < l.xCells; x++) {
+                for (y = 0; y < l.yCells; y++) {
+                    l.next[x][y] = l.prev[x][y];
+                }
             }
-        }
-   }
 
-    var _neighbourCount = function(x, y) {
-        var l = life;
-        var count = 0;
-        var neighbours = [
-            l.prev[x][(y - 1 + l.yCells) % l.yCells],
-            l.prev[(x + 1 + l.xCells) % l.xCells][(y - 1 + l.yCells) % l.yCells],
-            l.prev[(x + 1 + l.xCells) % l.xCells][y],
-            l.prev[(x + 1 + l.xCells) % l.xCells][(y + 1 + l.yCells) % l.yCells],
-            l.prev[x][(y + 1 + l.yCells) % l.yCells],
-            l.prev[(x - 1 + l.xCells) % l.xCells][(y + 1 + l.yCells) % l.yCells],
-            l.prev[(x - 1 + l.xCells) % l.xCells][y],
-            l.prev[(x - 1 + l.xCells) % l.xCells][(y - 1 + l.yCells) % l.yCells],
-        ];
+            for (x = 0; x < l.xCells; x++) {
+                for (y = 0; y < l.yCells; y++) {
+                    count = neighbourCount(x, y);
 
-        for (var i = 0; i < neighbours.length; i++) {
-            if (neighbours[i]) {
-                count++;
+                    // Game of Life rules
+                    if (prev[x][y]) {
+                        if (count < 2 || count > 3) {
+                            next[x][y] = false;
+                        }
+                    } else if (count === 3) {
+                        next[x][y] = true;
+                    }
+                }
             }
-        }
-             
-        return count;
-    }
+
+            g.paint();
+
+            for (x = 0; x < l.xCells; x++) {
+                for (y = 0; y < l.yCells; y++) {
+                    l.prev[x][y] = l.next[x][y];
+                }
+            }
+        },
+
+        toggleLife = function () {
+            if (!alive) {
+                alive = true;
+                timeout = setInterval(life.nextGen(), this.speed);
+            } else {
+                alive = false;
+                clearInterval(timeout);
+            }
+        },
+
+        // Parses files in Run Length Encoded Format
+        // http://www.conwaylife.com/wiki/RLE
+        loadPattern = function (url) {
+            var g = graphics,
+                l = life,
+                padding = 30;
+
+            $.ajax({
+                url: url,
+                success: function (data) {
+                    var match = data.match(/x\s=\s(\d*).*?y\s=\s(\d*).*\r([^]*)!/),
+                        x = parseInt(match[1], 10),
+                        pattern = match[3].replace(/\s+/g, ""), // remove whitespace
+                        lines = pattern.split('$'),
+                        offset = 0,
+                        i,
+                        line,
+                        length,
+                        j,
+                        y = padding - 1;
+
+                    $(g.canvasId).attr('height', g.cellSize * (y + 1 + (padding * 2)));
+                    $(g.canvasId).attr('width', g.cellSize * (x + 1 + (padding * 2)));
+                    $(g.canvasId).unbind('mousedown');
+                    l.initUniverse(g.canvasId);
+
+
+                    for (i = 0; i < lines.length; i++) {
+                        y++;
+                        x = padding;
+                        line = lines[i];
+                        while (line) {
+                            if (line.charAt(0) === 'o' || line.charAt(0) === 'b') {
+                                if (line.charAt(0) === 'o') {
+                                    l.prev[x][y] = true;
+                                    g.drawCell(x, y, true);
+                                }
+                                x++;
+                                line = line.substring(1);
+                            } else {
+                                length = line.match(/(\d*)/)[1];
+                                line = line.substring(length.length);
+                                length = parseInt(length, 10);
+                                if (!line) {
+                                    y += length - 1;
+                                    break;
+                                }
+                                if (line.charAt(0) === 'o') {
+                                    for (j = 0; j < length; j++) {
+                                        l.prev[x + j][y] = true;
+                                        g.drawCell(x + j, y, true);
+                                    }
+                                }
+                                x += length;
+                                line = line.substring(1);
+                            }
+                        }
+                    }
+                }
+            });
+        },
+
+        changeSpeed = function (faster) {
+            if (faster) {
+                if (this.speed === 0) {
+                    return;
+                }
+                this.speed -= 10;
+
+            } else {
+                if (this.speed === 1000) {
+                    return;
+                }
+                this.speed += 10;
+            }
+
+            if (alive) {
+                clearInterval(timeout);
+                timeout = setInterval(life.nextGen(), this.speed);
+            }
+        },
+
+        clear = function () {
+            var l = life,
+                x,
+                y,
+                g = graphics;
+
+            for (x = 0; x < l.xCells; x++) {
+                for (y = 0; y < l.yCells; y++) {
+                    l.next[x][y] = false;
+                }
+            }
+
+            g.paint();
+
+            for (x = 0; x < l.xCells; x++) {
+                for (y = 0; y < l.yCells; y++) {
+                    l.prev[x][y] = false;
+                }
+            }
+        };
+
 
     return {
         yCells: yCells,
@@ -318,6 +330,6 @@ var life = function() {
         toggleLife: toggleLife,
         clear: clear,
         changeSpeed: changeSpeed,
-        loadPattern: loadPattern,
-    }
-}();
+        loadPattern: loadPattern
+    };
+}());
