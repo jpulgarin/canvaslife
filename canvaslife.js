@@ -277,6 +277,10 @@ var life = (function () {
             });
         },
 
+        isAlive = function () {
+            return life.alive;
+        },
+
         changeSpeed = function (faster) {
             if (faster) {
                 if (this.speed === 0) {
@@ -324,11 +328,11 @@ var life = (function () {
         xCells: xCells,
         prev: prev,
         next: next,
-        alive: alive,
         speed: speed,
         initUniverse: initUniverse,
         nextGen: nextGen,
         toggleLife: toggleLife,
+        isAlive: isAlive,
         clear: clear,
         changeSpeed: changeSpeed,
         loadPattern: loadPattern
