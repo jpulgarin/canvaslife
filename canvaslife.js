@@ -208,7 +208,7 @@ var life = (function () {
         toggleLife = function () {
             if (!alive) {
                 alive = true;
-                timeout = setInterval(life.nextGen(), this.speed);
+                timeout = setInterval(life.nextGen, this.speed);
             } else {
                 alive = false;
                 clearInterval(timeout);
