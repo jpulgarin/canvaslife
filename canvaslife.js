@@ -31,8 +31,8 @@ var graphics = (function () {
         ctx,
         canvasId,
         cellSize = 10, // pixels
-        onColour = 'rgb(0, 200, 0)',
-        offColour = 'rgb(200, 0, 0)',
+        onColour = 'rgb(0, 0, 0)',
+        offColour = 'rgb(255, 255, 255)',
         gridColour = 'rgb(50, 50, 50)',
         initCanvas = function (canvasId) {
             var g = graphics;
