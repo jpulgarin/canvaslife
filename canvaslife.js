@@ -285,26 +285,26 @@ var life = (function () {
     }
 
     function isAlive() {
-        return life.alive;
+        return alive;
     }
 
     function changeSpeed(faster) {
         if (faster) {
-            if (this.speed === 0) {
+            if (life.speed === 0) {
                 return;
             }
-            this.speed -= 10;
+            life.speed -= 10;
 
         } else {
-            if (this.speed === 1000) {
+            if (life.speed === 1000) {
                 return;
             }
-            this.speed += 10;
+            life.speed += 10;
         }
 
         if (alive) {
             clearInterval(timeout);
-            timeout = setInterval(life.nextGen, this.speed);
+            timeout = setInterval(life.nextGen, life.speed);
         }
     }
 
