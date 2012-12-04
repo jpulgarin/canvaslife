@@ -6,7 +6,7 @@ canvaslife
 Demo
 ----
 
-See a full demo at <http://www.julianpulgarin.com/canvaslife/>, including over 1 200 interesting patterns.
+See a full demo at <http://www.julianpulgarin.com/canvaslife/>, including over 1200 interesting patterns.
 
 Setup
 -----
