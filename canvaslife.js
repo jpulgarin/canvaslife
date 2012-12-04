@@ -328,6 +328,7 @@ var life = (function () {
         xCells: xCells,
         prev: prev,
         next: next,
+        universe: prev,
         speed: speed,
         initUniverse: initUniverse,
         nextGen: nextGen,
