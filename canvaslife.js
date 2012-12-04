@@ -293,7 +293,7 @@ var life = (function () {
 
             if (alive) {
                 clearInterval(timeout);
-                timeout = setInterval(life.nextGen(), this.speed);
+                timeout = setInterval(life.nextGen, this.speed);
             }
         },
 
