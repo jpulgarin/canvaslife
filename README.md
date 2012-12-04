@@ -41,7 +41,7 @@ Usage
 
 You can populate the grid by click and dragging your mouse to revive/kill cells.
 
-You can also interact with the Game of Life Univese through JavaScript, via the `life` and `graphics` object. 
+You can also interact with the Game of Life Univese through JavaScript, via the `life` and `graphics` objects.
 
 life
 ----
