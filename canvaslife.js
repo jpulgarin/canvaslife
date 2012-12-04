@@ -29,16 +29,16 @@ var graphics = (function () {
 
     var canvas,
         ctx,
-        canvasId,
+        canvasSelector,
         cellSize = 10, // pixels
         onColour = 'rgb(0, 0, 0)',
         offColour = 'rgb(255, 255, 255)',
         gridColour = 'rgb(50, 50, 50)',
-        initCanvas = function (canvasId) {
+        initCanvas = function (canvasSelector) {
             var g = graphics;
-            g.canvas = $(canvasId).get(0);
+            g.canvas = $(canvasSelector).get(0);
             g.ctx = g.canvas.getContext('2d');
-            g.canvasId = canvasId;
+            g.canvasSelector = canvasSelector;
         },
         drawCell = function (x, y, alive) {
             var g = graphics;
@@ -71,7 +71,7 @@ var graphics = (function () {
             processCell(getCellPointUnderMouse(e));
 
 
-            $(g.canvasId).mousemove(function (e) {
+            $(g.canvasSelector).mousemove(function (e) {
                 processCell(getCellPointUnderMouse(e));
             });
         };
@@ -94,7 +94,7 @@ var graphics = (function () {
     return {
         canvas: canvas,
         ctx: ctx,
-        canvasId: canvasId,
+        canvasSelector: canvasSelector,
         cellSize: cellSize,
         onColour: onColour,
         offColour: offColour,
@@ -118,11 +118,11 @@ var life = (function () {
         alive = false,
         x,
         y,
-        initUniverse = function (canvasId) {
+        initUniverse = function (canvasSelector) {
             var l = life,
                 g = graphics;
 
-            g.initCanvas(canvasId);
+            g.initCanvas(canvasSelector);
             l.xCells = Math.floor((g.canvas.width - 1) / g.cellSize);
             l.yCells = Math.floor((g.canvas.height - 1) / g.cellSize);
             g.ctx.fillStyle = g.offColour;
@@ -142,9 +142,9 @@ var life = (function () {
                 g.ctx.fillRect(0, y * g.cellSize, l.xCells * g.cellSize, 1);
             }
             g.ctx.fillRect(0, l.yCells * g.cellSize, l.xCells * g.cellSize, 1);
-            $(canvasId).mousedown(g.handleMouse);
+            $(canvasSelector).mousedown(g.handleMouse);
             $('body').mouseup(function (e) {
-                $(g.canvasId).unbind('mousemove');
+                $(g.canvasSelector).unbind('mousemove');
             });
         },
         neighbourCount = function (x, y) {
@@ -236,10 +236,10 @@ var life = (function () {
                         j,
                         y = padding - 1;
 
-                    $(g.canvasId).attr('height', g.cellSize * (y + 1 + (padding * 2)));
-                    $(g.canvasId).attr('width', g.cellSize * (x + 1 + (padding * 2)));
-                    $(g.canvasId).unbind('mousedown');
-                    l.initUniverse(g.canvasId);
+                    $(g.canvasSelector).attr('height', g.cellSize * (y + 1 + (padding * 2)));
+                    $(g.canvasSelector).attr('width', g.cellSize * (x + 1 + (padding * 2)));
+                    $(g.canvasSelector).unbind('mousedown');
+                    l.initUniverse(g.canvasSelector);
 
 
                     for (i = 0; i < lines.length; i++) {
