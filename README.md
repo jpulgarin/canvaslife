@@ -33,7 +33,7 @@ Finally you need to initialize the Game of Life Universe and tell it which canva
 	<script type="text/javascript">
 	$('document').ready(function() {
 		life.initUniverse('#universe');
-	}
+	});
 	</script>
 	
 Usage
