@@ -124,9 +124,6 @@ var life = (function () {
 
 
     function initUniverse(canvasSelector) {
-        var l = life,
-            g = graphics;
-
         graphics.initCanvas(canvasSelector);
         life.xCells = Math.floor((graphics.canvas.width - 1) / graphics.cellSize);
         life.yCells = Math.floor((graphics.canvas.height - 1) / graphics.cellSize);
