@@ -179,11 +179,7 @@ var life = (function () {
             g = graphics,
             count;
 
-        for (x = 0; x < life.xCells; x++) {
-            for (y = 0; y < life.yCells; y++) {
-                life.next[x][y] = life.prev[x][y];
-            }
-        }
+        life.next = life.prev;
 
         for (x = 0; x < life.xCells; x++) {
             for (y = 0; y < life.yCells; y++) {
@@ -202,11 +198,7 @@ var life = (function () {
 
         graphics.smartPaint();
 
-        for (x = 0; x < life.xCells; x++) {
-            for (y = 0; y < life.yCells; y++) {
-                life.prev[x][y] = life.next[x][y];
-            }
-        }
+        life.prev = life.next;
     }
 
     function toggleLife() {
