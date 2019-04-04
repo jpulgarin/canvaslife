@@ -15,7 +15,7 @@
  */
 
 
-/*globals $ */
+/* globals $ */
 
 
 const life = (function () {
