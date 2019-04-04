@@ -6,7 +6,7 @@ canvaslife
 Demo
 ----
 
-See a full demo at <http://www.julianpulgarin.com/canvaslife/>, including over 1200 interesting patterns.
+See a full demo at <http://www.pulgarin.co/canvaslife/>, including over 1200 interesting patterns.
 
 Setup
 -----
@@ -15,12 +15,12 @@ To start with, you need to include [jQuery](http://jquery.com/), and `canvaslife
 
 	<head>
 	…
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.js"></script>
-	<script src="http://jpulgarin.github.com/canvaslife/canvaslife.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="http://jpulgarin.github.io/canvaslife/canvaslife.js"></script>
 	…
 	</head>
 
-You also need a `<canvas>` element which canvaslife.js will use to display the grid of cells:
+You also need a `<canvas>` element which `canvaslife.js` will use to display the grid of cells:
 
 	<body>
 	…
@@ -41,48 +41,40 @@ Usage
 
 You can populate the grid by click and dragging your mouse to revive/kill cells.
 
-You can also interact with the Game of Life Univese through JavaScript, via the `life` and `graphics` objects.
+You can also interact with the Game of Life Universe through JavaScript, via the `life` object.
 
 life
 ----
 
-### 'life' object properties
+### object properties
 
-`life.xCells` - Number of cells per row.
+`life.cellSize` - The height/width (in pixels) of each cell.
 
-`life.yCells` - Number of cells per column.
+`life.onColour` - The colour of living cells.
 
-`life.speed` - An integer representing the speed at which the universe is evolving. `1000` being the slowest, and `0` being the fastest.
+`life.offColour` - The colour of dead cells.
 
-`life.universe` - A two dimensional array of booleans, representing the current alive/dead state of all cells in the universe. When making changes to this array ensure that `life.isAlive()` returns `false` so that your changes are not overriden by the next generation being calculated.
+`life.gridColour` - The colour of the grid lines.
+
+`life.universe` - A two dimensional array of booleans, representing the current alive/dead state of all cells in the universe. When making changes to this array ensure that `life.isEvolving()` returns `false` so that your changes are not overridden by the next generation being calculated.
 
 
-### 'life' object methods
+### object methods
 
 `life.initUniverse(canvasSelector)` - Initializes a Game of Life universe. `canvasSelector` should be a [jQuery selector](http://api.jquery.com/category/selectors/) that matches to the desired canvas element.
 
-`life.loadPattern(url)` - Loads a [Run Length Encoded](http://psoup.math.wisc.edu/mcell/ca_files_formats.html#RLE) format Game of Life pattern file from the specified `url` into the universe.
+`life.loadPattern(url)` - Loads a [Run Length Encoded](http://psoup.math.wisc.edu/mcell/ca_files_formats.html#RLE) format Game of Life pattern file into the universe from the specified `url`.
 
-`life.toggleLife()` - Toggle whether the universe is in an envolving or static state.
+`life.toggleLife()` - Toggles whether the universe is in an envolving or static state.
 
-`life.isAlive()` - Returns `true` if the universe is evolving, and `false` if it is static.
+`life.isEvolving()` - Returns `true` if the universe is evolving and `false` if it is static.
 
 `life.nextGen()` - Evolve the universe one generation forward.
 
 `life.clear()` - Kills all cells in the universe.
 
-`life.changeSpeed(faster)` - Increases the speed of the universe if `faster` is `true`, and decreases it if `faster` is `false`.
+`life.speed()` - An integer representing the speed at which the universe is evolving. `0` is the slowest and `10` is the fastest.
 
-graphics
---------
+`life.changeSpeed(newSpeed)` - Sets the new speed for the universe to evolve at.
 
-### 'graphics' object methods
-
-`graphics.paint()` - Paint the current state of the universe.
-
-
-
-
-	
-
-
+`life.paint()` - Paints the current state of the universe.
