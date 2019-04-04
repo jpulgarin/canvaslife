@@ -19,8 +19,8 @@
 
 
 const life = (function () {
-    let prev = []; // Previous generation
-    let next = []; // Next generation
+    const prev = []; // Previous generation
+    const next = []; // Next generation
     let speed = 0;
     let isEvolving = false;
     let canvas, ctx, canvasSelector, yCells, xCells, timeout;
