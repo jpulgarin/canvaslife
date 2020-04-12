@@ -223,7 +223,7 @@ const life = (function () {
 
         loadPattern: function (url) {
             // Parses files in Run Length Encoded Format
-            // http://www.conwaycom/wiki/RLE
+            // https://www.conwaylife.com/wiki/Run_Length_Encoded
             $.ajax({
                 url: url,
                 success: function (data) {
