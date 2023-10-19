@@ -28,7 +28,7 @@ You also need a `<canvas>` element which `canvaslife.js` will use to display the
 	…
 	</body>
 	
-Finally you need to initialize the Game of Life Universe and tell it which canvas element to use, like so:
+Lastly, you need to initialize the Game of Life Universe and tell it which canvas element to use, like so:
 
 	<script type="text/javascript">
 	$('document').ready(function() {
