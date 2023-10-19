@@ -1,22 +1,22 @@
 canvaslife
 ==========
 
-[Conway's Game of Life](http://en.wikipedia.org/wiki/Conway's_Game_of_Life) implemented in HTML5 canvas. `canvaslife.js` takes care of displaying and calculating the various states of the Game of Life universe, and allows you to interact with it through JavaScript.
+[Conway's Game of Life](https://en.wikipedia.org/wiki/Conway's_Game_of_Life) implemented in HTML5 canvas. `canvaslife.js` takes care of displaying and calculating the various states of the Game of Life universe, and allows you to interact with it through JavaScript.
 
 Demo
 ----
 
-See a full demo at <http://www.pulgarin.co/canvaslife/>, including over 1200 interesting patterns.
+See a full demo at <https://www.pulgarin.co/canvaslife/>, including over 1200 interesting patterns.
 
 Setup
 -----
 
-To start with, you need to include [jQuery](http://jquery.com/), and `canvaslife.js`, like so:
+To start with, you need to include [jQuery](https://jquery.com/), and `canvaslife.js`, like so:
 
 	<head>
 	…
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-	<script src="http://jpulgarin.github.io/canvaslife/canvaslife.js"></script>
+	<script src="https://jpulgarin.github.io/canvaslife/canvaslife.js"></script>
 	…
 	</head>
 
@@ -61,9 +61,9 @@ life
 
 ### object methods
 
-`life.initUniverse(canvasSelector)` - Initializes a Game of Life universe. `canvasSelector` should be a [jQuery selector](http://api.jquery.com/category/selectors/) that matches to the desired canvas element.
+`life.initUniverse(canvasSelector)` - Initializes a Game of Life universe. `canvasSelector` should be a [jQuery selector](https://api.jquery.com/category/selectors/) that matches to the desired canvas element.
 
-`life.loadPattern(url)` - Loads a [Run Length Encoded](http://psoup.math.wisc.edu/mcell/ca_files_formats.html#RLE) format Game of Life pattern file into the universe from the specified `url`.
+`life.loadPattern(url)` - Loads a [Run Length Encoded](https://conwaylife.com/wiki/Run_Length_Encoded) format Game of Life pattern file into the universe from the specified `url`.
 
 `life.toggleLife()` - Toggles whether the universe is in an envolving or static state.
 
